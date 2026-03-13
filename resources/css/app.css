@@ -1,0 +1,24 @@
+/* Main App CSS - Imports all styles */
+@import './base.css';
+@import './layout.css';
+@import './home.css';
+@import './pets.css';
+@import './cart.css';
+@import './auth.css';
+@import './appointments.css';
+@import './orders.css';
+@import './profile.css';
+@import './pet-show.css';
+@import './help.css';
+@import './review.css';
+@import './payentsuccess.css';
+@import './accessory-show.css';
+
+/* Admin Specific Styles */
+@import './adminSideBar.css';
+@import './petList.css';
+@import './searchBar.css';
+@import './accessoryAddEdit.css';
+@import './petAdd.css';
+@import './loadingAnimation.css';
+

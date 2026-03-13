@@ -1,0 +1,180 @@
+.selection-option input:checked+.selection-label {
+    border-color: var(--color-brand-medium) !important;
+    background-color: var(--color-brand-soft) !important;
+    color: var(--color-brand-medium) !important;
+    font-weight: 600;
+    box-shadow: 0 0 0 1px var(--color-brand-medium);
+}
+
+.selection-label:hover {
+    border-color: var(--color-brand-medium) !important;
+}
+
+/* Outlet Card Styles */
+.outlet-card-label {
+    display: block;
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 2px solid #f3f4f6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.outlet-card input:checked+.outlet-card-label {
+    border-color: var(--color-brand-medium);
+    background-color: var(--color-brand-soft);
+    box-shadow: 0 4px 6px -1px rgba(143, 93, 84, 0.1);
+    /* brand-medium rgb approx */
+}
+
+.outlet-card input:checked+.outlet-card-label .outlet-name {
+    color: var(--color-brand-medium);
+}
+
+.outlet-name {
+    display: block;
+    font-weight: 700;
+    color: var(--color-brand-dark);
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+.outlet-stock {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.in-stock {
+    color: #059669;
+    /* Keep standard green for stock */
+}
+
+.out-of-stock {
+    color: #dc2626;
+    /* Keep standard red for out of stock */
+}
+
+.outlet-card-label:hover {
+    border-color: var(--color-brand-light);
+}
+
+/* Additional layout styles extracted from inline styles */
+/* .accessory-selection-options replaced by .selection-options */
+.secondary-attribute-text {
+    color: #4b5563;
+}
+
+.pet-show-description-container {
+    margin-top: 2rem;
+}
+
+.pet-show-description-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.pet-show-description-text {
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.availability-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 12px;
+}
+
+.availability-title {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: #374151;
+    font-weight: 600;
+}
+
+.unavailable-message {
+    color: #dc2626;
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: #fee2e2;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Newly extracted classes */
+.brand-text {
+    margin-top: 0.5rem;
+}
+
+.selection-container {
+    margin-top: 1.5rem;
+}
+
+.selection-group {
+    margin-bottom: 1.5rem;
+}
+
+.selection-header {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    color: #374151;
+    font-weight: 600;
+}
+
+.selection-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.selection-label {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.hidden-radio {
+    display: none;
+}
+
+.simple-value-text {
+    color: #4b5563;
+}
+
+.action-form {
+    width: 100%;
+}
+
+.stock-display-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.actions-container {
+    margin-top: 2.5rem;
+}
+
+.cart-button-full {
+    width: 100%;
+    justify-content: center;
+}
+@media (max-width: 768px) {
+    .stock-display-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stock-display-grid {
+        grid-template-columns: 1fr;
+    }
+}

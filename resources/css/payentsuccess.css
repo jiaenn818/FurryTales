@@ -1,0 +1,112 @@
+.payment-success-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.success-card {
+    background: #fff;
+    border-radius: 1.5rem;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: 480px;
+    width: 100%;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.success-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #28a745;
+    margin-bottom: 0.5rem;
+}
+
+.success-card h1 {
+    font-size: 2rem;
+    color: #1f2937;
+    margin: 0;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 0.8rem 1rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}
+
+.success-message {
+    font-size: 1rem;
+    color: #475569;
+    margin: 1rem 0 0.5rem 0;
+}
+
+.redirect-info {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.redirect-info a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.redirect-info a:hover {
+    text-decoration: underline;
+}
+
+.btn-orders {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #2563eb;
+    color: #fff;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-orders:hover {
+    background-color: #1d4ed8;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@media (max-width: 768px) {
+    .success-card {
+        padding: 2rem 1.5rem;
+        border-radius: 1rem;
+    }
+    .success-icon {
+        font-size: 3rem;
+    }
+    .success-card h1 {
+        font-size: 1.5rem;
+    }
+    .btn-orders {
+        width: 100%;
+    }
+}

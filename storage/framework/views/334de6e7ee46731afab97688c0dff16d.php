@@ -1,0 +1,282 @@
+
+
+<?php $__env->startSection('content'); ?>
+
+<link rel="stylesheet" href="<?php echo e(asset('css/pet-show.css')); ?>">
+<link rel="stylesheet" href="<?php echo e(asset('css/accessory-show.css')); ?>">
+
+<div class="pet-show-page">
+    
+    <!-- Back Button -->
+    <a href="<?php echo e(route('accessories.index')); ?>" class="pet-show-back-button">
+        <span>&larr;</span> Back to Accessories
+    </a>
+
+    <div class="pet-show-container">
+        
+        <!-- Images Section -->
+        <div class="pet-show-images">
+            <div class="pet-show-header pet-show-header-left">
+                <h1><?php echo e($accessory->AccessoryName); ?></h1>
+                <div class="pet-show-meta">
+                    <span class="pet-show-breed"><?php echo e($accessory->Category); ?></span>
+                    <span class="pet-show-divider"></span>
+                    <span class="pet-show-price">RM <?php echo e(number_format($accessory->Price, 2)); ?></span>
+                </div>
+                <p class="text-brand-medium brand-text">Brand : <?php echo e($accessory->Brand); ?></p>
+            </div>
+
+            <div class="pet-show-main-image">
+                <!-- Main Image -->
+                <img id="mainPhoto" src="<?php echo e(asset($accessory->Image ?: 'image/default-pet.png')); ?>" alt="<?php echo e($accessory->AccessoryName); ?>">
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="pet-show-details">
+            <div class="pet-show-details-card">
+
+
+                <!-- Flexible Selection Grid (JSON Details) -->
+                <?php if(isset($details) && count($details) > 0): ?>
+                    <div class="pet-show-selections selection-container">
+                        <?php $__currentLoopData = $details; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $values): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="selection-group">
+                                <h3 class="selection-header"><?php echo e($label); ?></h3>
+                                <div class="selection-options">
+                                    <?php $__currentLoopData = $values; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="selection-option">
+                                            <input type="radio" 
+                                                   id="<?php echo e($label); ?>_<?php echo e($index); ?>" 
+                                                   name="details[<?php echo e($label); ?>]" 
+                                                   value="<?php echo e($option); ?>" 
+                                                   data-clean-value="<?php echo e($option); ?>"
+                                                   class="detail-radio hidden-radio"
+                                                   <?php echo e($index === 0 ? 'checked' : ''); ?>>
+                                            <label for="<?php echo e($label); ?>_<?php echo e($index); ?>" 
+                                                   class="selection-label">
+                                                <?php echo e($option); ?>
+
+                                            </label>
+                                        </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const basePrice = <?php echo e($accessory->Price); ?>;
+                            const variants = <?php echo json_encode($accessory->variants, 15, 512) ?>;
+                            const priceDisplay = document.querySelector('.pet-show-price');
+                            const radios = document.querySelectorAll('.detail-radio');
+                            const outletSelect = document.getElementById('outlet_id');
+                            const variantIdInput = document.getElementById('variant_id');
+                            const stockDisplayContainer = document.querySelector('.pet-show-info-grid');
+
+                            function getVariantKey() {
+                                const selected = [];
+                                const groups = new Set();
+                                radios.forEach(radio => groups.add(radio.name));
+                                
+                                groups.forEach(groupName => {
+                                    const checked = document.querySelector(`input[name="${groupName}"]:checked`);
+                                    if (checked) {
+                                        // Use data-clean-value for the DB key match
+                                        const label = groupName.replace('details[', '').replace(']', '');
+                                        selected.push(`${label}:${checked.dataset.cleanValue}`);
+                                    }
+                                });
+                                return selected.sort().join('|');
+                            }
+
+                            function updateUI() {
+                                const key = getVariantKey();
+                                
+                                const variant = variants.find(v => v.VariantKey === key);
+                                console.log('DEBUG: Found Variant:', variant);
+                                
+                                let finalPrice = basePrice;
+                                if (variant) {
+                                    finalPrice += parseFloat(variant.PriceModifier || 0);
+                                    variantIdInput.value = variant.VariantID;
+                                } else {
+                                    // Fallback to label price mods if no specific variant found
+                                    let labelMods = 0;
+                                    radios.forEach(radio => {
+                                        if (radio.checked) labelMods += parseFloat(radio.dataset.priceMod || 0);
+                                    });
+                                    finalPrice += labelMods;
+                                    variantIdInput.value = ''; // Clear variant ID if no exact match
+                                }
+
+                                priceDisplay.innerText = 'RM ' + finalPrice.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+
+                                // Update Stock & Outlet Display
+                                const currentOutlet = document.querySelector('input[name="outlet_id"]:checked')?.value;
+                                
+                                if (variant) {
+                                    if (variant.outlets && variant.outlets.length > 0) {
+                                        let stockHtml = '';
+                                        variant.outlets.forEach((vo, idx) => {
+                                            const isChecked = vo.OutletID === currentOutlet || (idx === 0 && !currentOutlet);
+                                            stockHtml += `
+                                                <div class="outlet-card">
+                                                    <input type="radio" name="outlet_id" id="outlet_${vo.OutletID}" value="${vo.OutletID}" ${isChecked ? 'checked' : ''} required class="hidden-radio">
+                                                    <label for="outlet_${vo.OutletID}" class="outlet-card-label">
+                                                        <span class="outlet-name">${vo.OutletID} Outlet</span>
+                                                        <span class="outlet-stock ${vo.StockQty > 0 ? 'in-stock' : 'out-of-stock'}">
+                                                            ${vo.StockQty > 0 ? vo.StockQty + ' available' : 'Out of Stock'}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            `;
+                                        });
+                                        stockDisplayContainer.innerHTML = stockHtml;
+                                    } else {
+                                        stockDisplayContainer.innerHTML = '<p class="unavailable-message">This item is currently out of stock</p>';
+                                    }
+                                } else if (variants.length > 0) {
+                                    stockDisplayContainer.innerHTML = '<p class="unavailable-message">This specific combination is currently unavailable.</p>';
+                                } else {
+                                    // General accessory stock if no variants
+                                    let stockHtml = '';
+                                    <?php $__currentLoopData = $accessory->outlets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $outlet): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        stockHtml += `
+                                            <div class="outlet-card">
+                                                <input type="radio" name="outlet_id" id="outlet_<?php echo e($outlet->OutletID); ?>" value="<?php echo e($outlet->OutletID); ?>" <?php echo e($idx === 0 ? 'checked' : ''); ?> required class="hidden-radio">
+                                                <label for="outlet_<?php echo e($outlet->OutletID); ?>" class="outlet-card-label">
+                                                    <span class="outlet-name"><?php echo e($outlet->OutletID); ?> Outlet</span>
+                                                    <span class="outlet-stock <?php echo e($outlet->pivot->StockQty > 0 ? 'in-stock' : 'out-of-stock'); ?>">
+                                                        <?php echo e($outlet->pivot->StockQty > 0 ? $outlet->pivot->StockQty . ' available' : 'Out of Stock'); ?>
+
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        `;
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    stockDisplayContainer.innerHTML = stockHtml;
+                                }
+                            }
+
+                            radios.forEach(radio => {
+                                radio.addEventListener('change', updateUI);
+                            });
+
+                            // Initial call
+                            updateUI();
+                        });
+                    </script>
+                <?php endif; ?>
+
+                <!-- Description -->
+                <div class="pet-show-description-container">
+                    <h3 class="pet-show-description-title">Description</h3>
+                    <p class="pet-show-description-text"><?php echo e($accessory->Description); ?></p>
+                </div>
+
+                <!-- Availability Section -->
+                <div class="availability-section">
+                <!-- Outlets & Stock -->
+                <div class="pet-show-section">
+                    <h3 class="availability-title">Choose Pickup/Delivery Outlet</h3>
+                    
+                    <form id="addToCartForm" action="<?php echo e(route('cart.add', $accessory->AccessoryID)); ?>" method="POST" class="pet-show-action-form action-form">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="type" value="accessory">
+                        <input type="hidden" name="variant_id" id="variant_id" value="">
+                        
+                        <div class="pet-show-info-grid stock-display-grid">
+                            <!-- JS updates this grid -->
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pet-show-actions actions-container">
+                            <button type="submit" class="pet-show-action-button pet-show-action-cart cart-button-full">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>        </div>
+    </div>
+</div>
+
+
+<div id="cartModal" class="pet-show-modal hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="pet-show-modal-wrapper">
+        <div class="pet-show-modal-overlay" aria-hidden="true"></div>
+        <div class="pet-show-modal-content">
+            <button id="cartModalClose" class="pet-show-modal-close"><span>&times;</span></button>
+            <div class="pet-show-modal-body">
+                <div class="pet-show-modal-icon"><span>🛍️</span></div>
+                <h3 id="cartModalMessage">Added to Cart!</h3>
+            </div>
+            <div id="cartModalOptions" class="pet-show-modal-options">
+                <a href="<?php echo e(route('cart.view')); ?>" class="pet-show-modal-button pet-show-modal-button-primary">Go to Cart</a>
+                <a href="<?php echo e(route('accessories.index')); ?>" class="pet-show-modal-button pet-show-modal-button-secondary">Continue Browsing</a>
+            </div>
+            <div class="pet-show-modal-close-wrapper">
+                <button id="cartModalCloseBtn" class="pet-show-modal-close-button hidden">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('cartModal');
+        const message = document.getElementById('cartModalMessage');
+        const options = document.getElementById('cartModalOptions');
+        const closeBtn = document.getElementById('cartModalCloseBtn');
+
+        function showModal(show) {
+            if(show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        document.getElementById('addToCartForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST', body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                message.textContent = data.message;
+                if(data.status === 'success'){
+                    options.style.display = 'flex';
+                    closeBtn.style.display = 'none';
+                } else {
+                    options.style.display = 'none';
+                    closeBtn.style.display = 'inline-flex';
+                }
+                showModal(true);
+            })
+            .catch(error => { alert('Error adding to cart.'); });
+        });
+
+        const closeHandlers = [
+            document.getElementById('cartModalClose'),
+            document.getElementById('cartModalCloseBtn'),
+            modal.querySelector('.pet-show-modal-overlay')
+        ];
+        
+        closeHandlers.forEach(el => {
+            if(el) el.addEventListener('click', () => showModal(false));
+        });
+    });
+</script>
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\User\finalyear\resources\views/accessory_show.blade.php ENDPATH**/ ?>
