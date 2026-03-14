@@ -40,7 +40,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 */
 
 Route::name('client.')->group(function () {
+    Route::get('/', function () {
+        return view('login'); // This points to resources/views/login.blade.php
+    })->name('home');
 
+    
     // Auth Routes
     Route::get('/register', function () {
         return view('register');
