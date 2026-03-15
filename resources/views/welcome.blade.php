@@ -29,6 +29,6 @@
     </style>
 </head>
 <body>
-    <a href="{{ route('login.page') }}" class="btn-login">Go to Login</a>
+    <a href="{{ route('client.login.page') }}" class="btn-login">Go to Login</a>
 </body>
 </html>
