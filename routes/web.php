@@ -41,7 +41,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::name('client.')->group(function () {
     Route::get('/', function () {
-        return redirect()->route('login.page'); 
+        return view('welcome'); // Points to resources/views/welcome.blade.php
     });
 
     
