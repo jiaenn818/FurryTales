@@ -10,9 +10,9 @@ def get_recommendations(customer_id, limit=5):
     # ================= DB CONNECTION =================
     db = mysql.connector.connect(
         host="127.0.0.1",
-        user="root",
-        password="",
-        database="furrytales1"
+        user="furryuser",
+        password="furrytales",
+        database="furrytales"
     )
     cursor = db.cursor(dictionary=True)
 
