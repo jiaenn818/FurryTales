@@ -338,7 +338,7 @@ class PetController extends Controller
             }
         }
 
-        return view('Client.pets.show', compact('pet'));
+        return view('client.pets.show', compact('pet'));
     }
 
     public function destroySearchHistory($id)
