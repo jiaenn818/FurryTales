@@ -99,7 +99,7 @@ Route::name('client.')->group(function () {
     Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
     Route::get('/payment-complete', function () {
-        return view('Client.paymentsuccess');
+        return view('client.paymentsuccess');
     })->name('payment.complete');
 
     // Order Routes
