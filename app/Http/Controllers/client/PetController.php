@@ -255,7 +255,6 @@ class PetController extends Controller
         $command = "/home/ubuntu/furrytales-venv/bin/python /var/www/html/furrytales/recommender/recommend.py $customerId $count";
         $output = shell_exec($command . " 2>&1");
         $result = json_decode($output, true);
-        dd($command, $output);
         
 
         return $result['recommendations'] ?? [];
