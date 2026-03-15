@@ -223,6 +223,8 @@ class PetController extends Controller
 
     public function getRecommendations(Request $request)
     {
+        dd(base_path('recommender/recommend.py'), file_exists(base_path('recommender/recommend.py')));
+        
         if (!Auth::check() || !Auth::user()->customer) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
