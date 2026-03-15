@@ -246,13 +246,13 @@ class PetController extends Controller
     private function fetchRecommendationsFromPython($customerId, $count)
     {
         $pythonScript = base_path('recommender/recommend.py');
-
+        $python = '/usr/bin/python3'; // full path from `which python3`
+        
         if (!file_exists($pythonScript)) {
             return [];
         }
 
-        $command = "python3 \"$pythonScript\" $customerId $count";
-        dd($command, shell_exec($command));
+        $command = "python \"$pythonScript\" $customerId $count";
         $output = shell_exec($command . " 2>&1");
         $result = json_decode($output, true);
 
