@@ -255,6 +255,8 @@ class PetController extends Controller
         $command = "python \"$pythonScript\" $customerId $count";
         $output = shell_exec($command . " 2>&1");
         $result = json_decode($output, true);
+        dd($command, $output);
+        
 
         return $result['recommendations'] ?? [];
     }
