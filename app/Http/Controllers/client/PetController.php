@@ -223,8 +223,7 @@ class PetController extends Controller
 
     public function getRecommendations(Request $request)
     {
-        dd(base_path('recommender/recommend.py'), file_exists(base_path('recommender/recommend.py')));
-        
+                
         if (!Auth::check() || !Auth::user()->customer) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
@@ -253,6 +252,7 @@ class PetController extends Controller
         }
 
         $command = "python3 \"$pythonScript\" $customerId $count";
+        dd($command, shell_exec($command));
         $output = shell_exec($command . " 2>&1");
         $result = json_decode($output, true);
 
