@@ -250,7 +250,7 @@ class PetController extends Controller
             return [];
         }
 
-        $command = "python \"$pythonScript\" $customerId $count";
+        $command = "python3 \"$pythonScript\" $customerId $count";
         $output = shell_exec($command . " 2>&1");
         $result = json_decode($output, true);
 
