@@ -207,7 +207,7 @@ class PetController extends Controller
         ========================== */
         $isDefaultBrowse = !$request->filled(['search', 'type', 'breed', 'outlet', 'min_price', 'max_price']);
 
-        return view('Client.pets.index', compact(
+        return view('client.pets.index', compact(
             'pets',
             'searchHistories',
             'types',
