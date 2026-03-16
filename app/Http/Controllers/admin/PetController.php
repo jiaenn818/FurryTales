@@ -15,18 +15,44 @@ class PetController extends Controller
     // Display all pets
     public function index()
     {
-        //check user type
+        // Check auth
         if (!Auth::check() || !Auth::user()->isStaff()) {
             abort(403, 'Unauthorized User');
         }
-        $pets = Pet::with(['outlet', 'supplier'])->orderBy('PetID', 'desc')->paginate(10); // get all pets
-        $categories = $this->getAllCategories(); // your categories
 
-        // Use your existing view file 'petList.blade.php'
-        return view('admin.pets.petList', compact('pets', 'categories'));
+        // -------------------------------
+        // 1️⃣ For stats, get all records
+        // -------------------------------
+        $allPets = Pet::with(['outlet', 'supplier'])->get(); // all pets for stats
+
+        // -------------------------------
+        // 2️⃣ Build query for table with search/filter
+        // -------------------------------
+        $query = Pet::with(['outlet', 'supplier'])->orderBy('PetID', 'desc');
+
+        // Server-side search
+        if ($search = request('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('PetName', 'like', "%{$search}%")
+                    ->orWhere('Breed', 'like', "%{$search}%")
+                    ->orWhere('Type', 'like', "%{$search}%")
+                    ->orWhere('PetID', 'like', "%{$search}%");
+            });
+        }
+
+        // Category filter
+        if ($category = request('category')) {
+            $query->where('Type', $category);
+        }
+
+        // Paginate table (after filtering)
+        $pets = $query->paginate(10)->withQueryString();
+
+        // Get categories
+        $categories = $this->getAllCategories();
+
+        return view('admin.pets.petList', compact('pets', 'allPets', 'categories'));
     }
-
-
     public function add()
     {
         $categories = Pet::getAllCategories();
@@ -100,7 +126,6 @@ class PetController extends Controller
 
                 // Assign to the correct column in database
                 $pet->{'ImageURL' . ($index + 1)} = 'image/' . $path;
-
             } else {
                 $pet->{'ImageURL' . ($index + 1)} = null;
             }
@@ -305,35 +330,18 @@ class PetController extends Controller
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
-    
+
         try {
-            $file = $request->file('image');
-            $tempPath = $file->getRealPath(); // temporary file path
-    
-            // ngrok URL
-            $ngrokUrl = "https://precosmic-unhygienic-darleen.ngrok-free.dev/classify";
-    
-            // Initialize cURL
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $ngrokUrl);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                'image' => new \CURLFile($tempPath, $file->getMimeType(), $file->getClientOriginalName())
-            ]);
-    
-            $response = curl_exec($ch);
-            $error = curl_error($ch);
-            curl_close($ch);
-    
-            if ($error) {
-                throw new \Exception($error);
+            $tempPath = $request->file('image')->store('detect', 'uploads');
+            $fullPath = public_path('image/' . $tempPath);
+
+            $result = Pet::detectBreed($fullPath);
+
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
             }
-    
-            $result = json_decode($response, true);
-    
+
             return response()->json($result);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'breed' => '',
@@ -357,7 +365,7 @@ class PetController extends Controller
         // Validate request
         $request->validate([
             'category_name' => 'required|string|unique:pet_categories,category_name',
-        ]);        
+        ]);
 
         \DB::table('pet_categories')->insert([
             'category_name' => $request->category_name
