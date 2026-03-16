@@ -53,7 +53,7 @@ class CartController extends Controller
             })
             ->get();
 
-        return view('Client.cart', compact('cart', 'cartItems', 'availableVouchers'));
+        return view('client.cart', compact('cart', 'cartItems', 'availableVouchers'));
     }
 
     public function add(Request $request, $id)
