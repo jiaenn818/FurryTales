@@ -175,7 +175,7 @@ class AppointmentController extends Controller
             ->orderBy('AppointmentDateTime', 'desc')
             ->paginate(5);
 
-        return view('Client.appointments.index', compact('appointments'));
+        return view('client.appointments.index', compact('appointments'));
     }
 
     /**
