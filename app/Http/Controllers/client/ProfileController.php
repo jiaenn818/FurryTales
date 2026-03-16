@@ -19,13 +19,13 @@ class ProfileController extends Controller
 
         $user = Auth::user();
         if (!$user->customer) {
-            return view('Client.profile.view', ['customerData' => null]);
+            return view('client.profile.view', ['customerData' => null]);
         }
         
         // Reload relationships to ensure freshness
         $customerData = Customer::with('user')->where('CustomerID', $user->customer->customerID)->first();
 
-        return view('Client.profile.view', ['customerData' => $customerData]);
+        return view('client.profile.view', ['customerData' => $customerData]);
     }
 
     // Edit profile
@@ -38,7 +38,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         $customerData = Customer::with('user')->where('CustomerID', $user->customer->customerID)->first();
         
-        return view('Client.profile.edit', ['customerData' => $customerData]);
+        return view('client.profile.edit', ['customerData' => $customerData]);
     }
 
     // Update profile
@@ -84,7 +84,7 @@ class ProfileController extends Controller
         
         $customerData = Customer::with('user')->where('CustomerID', Auth::user()->customer->customerID)->first();
         
-        return view('Client.profile.change', ['customerData' => $customerData]);
+        return view('client.profile.change', ['customerData' => $customerData]);
     }
 
     // Change password
