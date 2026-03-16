@@ -49,7 +49,8 @@ class SupplierController extends Controller
             'SupplierID',
             'SupplierName',
             'SupplierEmail',
-            'SupplierPhoneNumber'
+            'SupplierPhoneNumber',
+            'SupplierAddress'
         ]));
 
         return redirect()
