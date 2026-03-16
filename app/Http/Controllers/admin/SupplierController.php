@@ -72,7 +72,7 @@ class SupplierController extends Controller
             'SupplierAddress' => 'required|string|max:255' // <-- add validation
         ]);
         
-        Supplier::create($request->only([
+        $supplier->update($request->only([
             'SupplierID',
             'SupplierName',
             'SupplierEmail',
