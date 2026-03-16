@@ -53,7 +53,7 @@ class OrderController extends Controller
 
         $orders = $ordersQuery->paginate(5);
 
-        return view('Client.orders.index', compact('orders'));
+        return view('client.orders.index', compact('orders'));
     }
 
 
@@ -74,7 +74,7 @@ class OrderController extends Controller
                          ->where('CustomerID', $customerId)
                          ->firstOrFail();
 
-        return view('Client.orders.show', compact('order'));
+        return view('client.orders.show', compact('order'));
     }
 
     public function downloadReceipt($id)
@@ -82,7 +82,7 @@ class OrderController extends Controller
         // Load both customer and items relationships
         $order = Purchase::with(['items', 'customer'])->findOrFail($id);
         
-        $pdf = Pdf::loadView('Client.orders.receipt-pdf', compact('order'));
+        $pdf = Pdf::loadView('client.orders.receipt-pdf', compact('order'));
         
         return $pdf->download('FurryTalesReceipt-' . $order->PurchaseID . '.pdf');
     }
@@ -92,7 +92,7 @@ class OrderController extends Controller
         // Load both customer and items relationships
         $order = Purchase::with(['items', 'customer'])->findOrFail($id);
         
-        return view('Client.orders.receipt-pdf', compact('order'));
+        return view('client.orders.receipt-pdf', compact('order'));
     }
 
 }
