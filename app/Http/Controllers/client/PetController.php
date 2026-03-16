@@ -243,22 +243,20 @@ class PetController extends Controller
         return response()->json(['success' => false, 'message' => 'No recommendations found']);
     }
 
-    private function fetchRecommendationsFromPython($customerId, $count)
-    {
-        $pythonScript = base_path('recommender/recommend.py');
-        $python = '/usr/bin/python3'; // full path from `which python3`
-        
-        if (!file_exists($pythonScript)) {
-            return [];
+        private function fetchRecommendationsFromPython($customerId, $count)
+        {
+            $pythonScript = base_path('recommender/recommend.py');
+            $python = '/var/www/html/furrytales/venv/bin/python3';
+            
+            if (!file_exists($pythonScript)) {
+                return [];
+            }
+            $command = "/var/www/html/furrytales/venv/bin/python3 /var/www/html/furrytales/recommender/recommend.py $customerId $count";
+            $output = shell_exec($command . " 2>&1");
+            $result = json_decode($output, true);
+            
+            return $result['recommendations'] ?? [];
         }
-
-        $command = "/home/ubuntu/furrytales-venv/bin/python /var/www/html/furrytales/recommender/recommend.py $customerId $count";
-        $output = shell_exec($command . " 2>&1");
-        $result = json_decode($output, true);
-        
-
-        return $result['recommendations'] ?? [];
-    }
 
     /* =========================
        OTHER METHODS (UNCHANGED)
