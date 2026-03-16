@@ -65,7 +65,7 @@ class SupplierController extends Controller
         $supplier = Supplier::where('SupplierID', $id)->firstOrFail();
 
         $request->validate([
-            'SupplierID' => 'required|unique:supplier,SupplierID|regex:/^SUP\d{3}$/',
+            'SupplierID' => 'required|regex:/^SUP\d{3}$/|unique:supplier,SupplierID,' . $supplier->SupplierID . ',SupplierID',
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
