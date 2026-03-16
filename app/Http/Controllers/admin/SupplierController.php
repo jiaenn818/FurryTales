@@ -9,33 +9,38 @@ use Illuminate\Support\Facades\Auth;
 class SupplierController extends Controller
 {
     // Display all suppliers
-    public function index()
+    public function index(Request $request)
     {
-        //check user type
         if (!Auth::check() || !Auth::user()->isStaff()) {
             abort(403, 'Unauthorized User');
         }
 
-        $suppliers = Supplier::with([
+        $query = Supplier::with([
             'pets',
             'accessories.variants.outlets'
-        ])->get();
-        $totalSuppliers = $suppliers->count();
-        $totalPets = $suppliers->sum('pets_count');
-        $averagePets = $totalSuppliers > 0 ? $totalPets / $totalSuppliers : 0;
+        ]);
+
+        // SERVER SIDE SEARCH
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('SupplierID', 'like', "%$search%")
+                    ->orWhere('SupplierName', 'like', "%$search%")
+                    ->orWhere('SupplierEmail', 'like', "%$search%")
+                    ->orWhere('SupplierPhoneNumber', 'like', "%$search%");
+            });
+        }
+
+        $suppliers = $query->paginate(5)->withQueryString();
 
         $nextSupplierID = Supplier::generateNextSupplierID();
 
         return view('admin.supplier', compact(
             'suppliers',
-            'totalSuppliers',
-            'totalPets',
-            'averagePets',
             'nextSupplierID'
         ));
-    }
-
-    // Store new supplier
+    }    // Store new supplier
     public function store(Request $request)
     {
         $request->validate([
@@ -43,15 +48,13 @@ class SupplierController extends Controller
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
-            'SupplierAddress' => 'required|string|max:255', // <-- add validation
         ]);
-        
+
         Supplier::create($request->only([
             'SupplierID',
             'SupplierName',
             'SupplierEmail',
-            'SupplierPhoneNumber',
-            'SupplierAddress', // <-- add here
+            'SupplierPhoneNumber'
         ]));
 
         return redirect()
@@ -65,19 +68,15 @@ class SupplierController extends Controller
         $supplier = Supplier::where('SupplierID', $id)->firstOrFail();
 
         $request->validate([
-            'SupplierID' => 'required|regex:/^SUP\d{3}$/|unique:supplier,SupplierID,' . $supplier->SupplierID . ',SupplierID',
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
-            'SupplierAddress' => 'required|string|max:255' // <-- add validation
         ]);
-        
+
         $supplier->update($request->only([
-            'SupplierID',
             'SupplierName',
             'SupplierEmail',
-            'SupplierPhoneNumber',
-            'SupplierAddress' // <-- add here
+            'SupplierPhoneNumber'
         ]));
 
         return redirect()

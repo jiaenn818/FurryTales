@@ -22,7 +22,7 @@ class RiderJobController extends Controller
         $purchases = DB::table('purchases')
             ->select('PurchaseID', 'CustomerID', 'DeliveryAddress', 'Postcode', 'Status', 'OrderDate')
             ->where('riderID', $riderID)
-            ->where('Status', 'Pending')
+            ->where('Status', 'Out for Delivery')
             ->get()
             ->map(function ($purchase) {
 
