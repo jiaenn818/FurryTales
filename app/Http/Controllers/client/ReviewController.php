@@ -31,7 +31,7 @@ class ReviewController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('Client.reviews', compact('orders', 'reviews'));
+        return view('client.reviews', compact('orders', 'reviews'));
     }
 
     // Store review submission
