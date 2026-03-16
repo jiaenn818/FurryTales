@@ -15,8 +15,7 @@ class Supplier extends Model
         'SupplierID',
         'SupplierName',
         'SupplierEmail',
-        'SupplierPhoneNumber',
-        'SupplierAddress'
+        'SupplierPhoneNumber'
     ];
 
     // Example: relation to pets
