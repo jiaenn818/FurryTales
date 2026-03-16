@@ -40,7 +40,9 @@ class SupplierController extends Controller
             'suppliers',
             'nextSupplierID'
         ));
-    }    // Store new supplier
+    }    
+    
+    // Store new supplier
     public function store(Request $request)
     {
         $request->validate([
@@ -48,13 +50,15 @@ class SupplierController extends Controller
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
+            'SupplierAddress' => 'required|string|max:255',
         ]);
-
+        
         Supplier::create($request->only([
             'SupplierID',
             'SupplierName',
             'SupplierEmail',
-            'SupplierPhoneNumber'
+            'SupplierPhoneNumber',
+            'SupplierAddress', // <-- add here
         ]));
 
         return redirect()
@@ -63,27 +67,30 @@ class SupplierController extends Controller
     }
 
     // Update supplier
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $supplier = Supplier::where('SupplierID', $id)->firstOrFail();
-
+    
         $request->validate([
+            'SupplierID' => 'required|regex:/^SUP\d{3}$/|unique:supplier,SupplierID,' . $supplier->SupplierID . ',SupplierID',
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
+            'SupplierAddress' => 'required|string|max:255'
         ]);
-
+    
         $supplier->update($request->only([
+            'SupplierID',
             'SupplierName',
             'SupplierEmail',
-            'SupplierPhoneNumber'
+            'SupplierPhoneNumber',
+            'SupplierAddress'
         ]));
-
+    
         return redirect()
             ->route('admin.suppliers.index')
             ->with('success', 'Supplier updated successfully.');
     }
-
     // Delete supplier
     public function destroy($id)
     {
