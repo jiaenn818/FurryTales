@@ -72,7 +72,8 @@ class SupplierController extends Controller
         $supplier->update($request->only([
             'SupplierName',
             'SupplierEmail',
-            'SupplierPhoneNumber'
+            'SupplierPhoneNumber',
+            'SupplierAddress'
         ]));
 
         return redirect()
