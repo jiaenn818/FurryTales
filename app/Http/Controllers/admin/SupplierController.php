@@ -43,15 +43,15 @@ class SupplierController extends Controller
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
-            'SupplierAddress' => 'required|string|max:255', 
+            'SupplierAddress' => 'required|string|max:255', // <-- add validation
         ]);
-
+        
         Supplier::create($request->only([
             'SupplierID',
             'SupplierName',
             'SupplierEmail',
             'SupplierPhoneNumber',
-            'SupplierAddress'
+            'SupplierAddress', // <-- add here
         ]));
 
         return redirect()
@@ -65,17 +65,19 @@ class SupplierController extends Controller
         $supplier = Supplier::where('SupplierID', $id)->firstOrFail();
 
         $request->validate([
+            'SupplierID' => 'required|unique:supplier,SupplierID|regex:/^SUP\d{3}$/',
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
-            'SupplierAddress' => 'required|string|max:255', 
+            'SupplierAddress' => 'required|string|max:255', // <-- add validation
         ]);
-
-        $supplier->update($request->only([
+        
+        Supplier::create($request->only([
+            'SupplierID',
             'SupplierName',
             'SupplierEmail',
             'SupplierPhoneNumber',
-            'SupplierAddress'
+            'SupplierAddress', // <-- add here
         ]));
 
         return redirect()
