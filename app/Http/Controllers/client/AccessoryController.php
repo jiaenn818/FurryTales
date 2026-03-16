@@ -84,7 +84,7 @@ class AccessoryController extends Controller
         $dbMinPrice = \App\Models\AccessoryVariant::min('Price') ?: 0;
         $dbMaxPrice = \App\Models\AccessoryVariant::max('Price') ?: 9999;
 
-        return view('Client.accessory.index', compact(
+        return view('client.accessory.index', compact(
             'accessories',
             'searchHistories',
             'categories',
@@ -124,6 +124,6 @@ class AccessoryController extends Controller
             }
         }
 
-        return view('Client.accessory.show', compact('accessory', 'details'));
+        return view('client.accessory.show', compact('accessory', 'details'));
     }
 }
