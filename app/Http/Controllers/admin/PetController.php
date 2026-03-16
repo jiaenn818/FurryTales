@@ -325,23 +325,40 @@ class PetController extends Controller
             ->with('success', "Pet '{$pet->PetName}' deleted successfully!");
     }
 
-    public function detectBreed(Request $request)
+   public function detectBreed(Request $request)
     {
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
-
+    
         try {
-            $tempPath = $request->file('image')->store('detect', 'uploads');
-            $fullPath = public_path('image/' . $tempPath);
-
-            $result = Pet::detectBreed($fullPath);
-
-            if (file_exists($fullPath)) {
-                unlink($fullPath);
+            $file = $request->file('image');
+            $tempPath = $file->getRealPath(); // temporary file path
+    
+            // ngrok URL
+            $ngrokUrl = "https://precosmic-unhygienic-darleen.ngrok-free.dev/classify";
+    
+            // Initialize cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $ngrokUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                'image' => new \CURLFile($tempPath, $file->getMimeType(), $file->getClientOriginalName())
+            ]);
+    
+            $response = curl_exec($ch);
+            $error = curl_error($ch);
+            curl_close($ch);
+    
+            if ($error) {
+                throw new \Exception($error);
             }
-
+    
+            $result = json_decode($response, true);
+    
             return response()->json($result);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'breed' => '',
