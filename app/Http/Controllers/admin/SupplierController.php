@@ -43,6 +43,7 @@ class SupplierController extends Controller
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
+            'SupplierAddress' => 'required|string|max:255', 
         ]);
 
         Supplier::create($request->only([
@@ -67,6 +68,7 @@ class SupplierController extends Controller
             'SupplierName' => 'required|string|max:255',
             'SupplierEmail' => 'required|email|max:255',
             'SupplierPhoneNumber' => 'required|string|max:20',
+            'SupplierAddress' => 'required|string|max:255', 
         ]);
 
         $supplier->update($request->only([
