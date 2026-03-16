@@ -3,11 +3,11 @@
 @section('title', 'View All Appointments')
 
 @push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         /* ===============================
-                   Layout Cards
-        ================================ */
+                               Layout Cards
+                    ================================ */
         .week-card,
         .section-card {
             background: #fff;
@@ -51,8 +51,8 @@
         }
 
         /* ===============================
-                   Timetable (Weekly View)
-                ================================ */
+                               Timetable (Weekly View)
+                            ================================ */
         .timetable {
             width: 100%;
             border-collapse: collapse;
@@ -81,8 +81,8 @@
         }
 
         /* ===============================
-                   Appointment Cards
-                ================================ */
+                               Appointment Cards
+                            ================================ */
         .appt-card {
             background: #e3f2fd;
             border-left: 4px solid #2196f3;
@@ -108,8 +108,8 @@
         }
 
         /* ===============================
-                   Notices
-                ================================ */
+                               Notices
+                            ================================ */
         .notice {
             margin: 15px 0;
             padding: 10px;
@@ -120,8 +120,8 @@
         }
 
         /* ===============================
-                   Appointment Table
-                ================================ */
+                               Appointment Table
+                            ================================ */
         .simple-table {
             width: 100%;
             border-collapse: separate;
@@ -175,8 +175,8 @@
         }
 
         /* ===============================
-                   Status Badges
-                ================================ */
+                               Status Badges
+                            ================================ */
         .badge-status {
             display: inline-block;
             padding: 6px 14px;
@@ -203,8 +203,8 @@
         }
 
         /* ===============================
-           Status Action Buttons
-        ================================ */
+                       Status Action Buttons
+                    ================================ */
         .status-actions {
             display: flex;
             gap: 6px;
@@ -252,8 +252,8 @@
 
 
         /* ===============================
-           Success Alert
-        ================================ */
+                       Success Alert
+                    ================================ */
         .alert-success {
             background: linear-gradient(135deg, #d4edda, #b7e4c7);
             color: #155724;
@@ -263,6 +263,126 @@
             font-weight: 500;
             box-shadow: 0 6px 18px rgba(40, 167, 69, 0.15);
             animation: slideFade 0.4s ease;
+        }
+
+        /* ===============================
+        Filters - Search & DatePicker
+       =============================== */
+        .filters-container form {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filters-container input[type="text"],
+        .filters-container input[type="date"],
+        .filters-container select {
+            flex: 1 1 220px;
+            min-width: 180px;
+            padding: 10px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+
+        .filters-container input[type="text"]:focus,
+        .filters-container input[type="date"]:focus,
+        .filters-container select:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+        }
+
+        /* Enhance datepicker styling */
+        .flatpickr-input {
+            cursor: pointer;
+            background: #fff;
+            border-radius: 12px !important;
+            padding: 10px 16px !important;
+            border: 1px solid #d1d5db !important;
+            font-size: 0.9rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .flatpickr-input:focus {
+            border-color: #2196f3 !important;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15) !important;
+        }
+
+        /* Style the buttons */
+        .filters-container button[type="submit"] {
+            background: linear-gradient(135deg, #2196f3, #1b6dd5);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .filters-container button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .filters-container a {
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 500;
+            border-radius: 12px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+        }
+
+        .filters-container a:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        /* =========================
+                   PAGINATION
+                ========================= */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding-left: 0;
+            margin: 30px;
+            gap: 5px;
+        }
+
+        .pagination li a,
+        .pagination li span {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--color-brand-medium);
+            text-decoration: none;
+            color: var(--color-brand-dark);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .pagination li a:hover {
+            background-color: var(--color-brand-light);
+        }
+
+        .pagination li.active span {
+            background: linear-gradient(135deg, var(--color-brand-primary-gradient-start), var(--color-brand-primary-gradient-end));
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .pagination li.disabled span {
+            color: #aaa;
+            cursor: not-allowed;
+            background-color: #f8f8f8;
+            border-color: #ddd;
         }
 
         /* subtle animation */
@@ -279,8 +399,8 @@
         }
 
         /* ===============================
-                   Responsive
-                ================================ */
+                Responsive
+            ================================ */
         .table-responsive {
             overflow-x: auto;
         }
@@ -320,7 +440,7 @@
 
                 <div class="d-flex gap-2">
                     <input type="date" id="datePicker" class="form-control w-auto"
-                        value="{{ $selectedDate->format('Y-m-d') }}">
+                        value="{{ $selectedDate->format('Y-m-d') }}" style = "width:90%;">
 
                     <button id="clearBtn" class="btn btn-secondary">
                         Clear
@@ -371,32 +491,37 @@
 
                 <tbody>
                     @for ($hour = 9; $hour <= 18; $hour++)
-                        @foreach ([0,30] as $minute)
+                        @foreach ([0, 30] as $minute)
                             @php
-                                if($hour == 18 && $minute == 30) continue;
+                                if ($hour == 18 && $minute == 30) {
+                                    continue;
+                                }
                             @endphp
 
-                    <tr>
-                        <td class="time-col">
-                            {{ sprintf('%02d:%02d', $hour, $minute) }}
-                        </td>
-                            @foreach (range(1, 7) as $day)
-                                <td>
-                                    @foreach ($appointments as $appt)
-                                        @if ($appt->AppointmentDateTime->hour == $hour && $appt->AppointmentDateTime->minute == $minute && $appt->AppointmentDateTime->dayOfWeekIso == $day)
-                                            <div class="appt-card {{ strtolower($appt->Status) }}">
-                                                <strong>
-                                                    {{ optional($appt->pet)->PetName ?? $appt->PetID }}
-                                                </strong><br>
-
-                                                {{ optional($appt->customer)->CustomerName ?? $appt->CustomerName }}<br>
-                                                <small>{{ $appt->Method }}</small>
-                                            </div>
-                                        @endif
-                                    @endforeach
+                            <tr>
+                                <td class="time-col">
+                                    {{ sprintf('%02d:%02d', $hour, $minute) }}
                                 </td>
-                            @endforeach
-                        </tr>
+                                @foreach (range(1, 7) as $day)
+                                    <td>
+                                        @foreach ($appointments as $appt)
+                                            @if (
+                                                $appt->AppointmentDateTime->hour == $hour &&
+                                                    $appt->AppointmentDateTime->minute == $minute &&
+                                                    $appt->AppointmentDateTime->dayOfWeekIso == $day)
+                                                <div class="appt-card {{ strtolower($appt->Status) }}">
+                                                    <strong>
+                                                        {{ optional($appt->pet)->PetName ?? $appt->PetID }}
+                                                    </strong><br>
+
+                                                    {{ optional($appt->customer)->CustomerName ?? $appt->CustomerName }}<br>
+                                                    <small>{{ $appt->Method }}</small>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </td>
+                                @endforeach
+                            </tr>
                         @endforeach
                     @endfor
                 </tbody>
@@ -409,18 +534,25 @@
         <hr class="my-4">
         <div class="d-flex align-items-center gap-2 mb-3">
 
-            <input type="text"
-                id="dateRange"
-                class="form-control w-auto"
-                placeholder="Select date range"
-                style="width: 80%; margin: 20px; background-color: #fff;"
-                value="{{ request('start_date') && request('end_date') ? request('start_date').' to '.request('end_date') : '' }}">
+            <div class="d-flex align-items-center gap-2 mb-3 filters-container">
 
-            <button id="resetFilterBtn" class="btn btn-secondary">
-                Show All
-            </button>
+                <form method="GET" class="d-flex gap-2 flex-wrap w-100">
 
-        </div>        <div class="section-card">
+                    <input type="text" name="search" placeholder="Search by Appointment / Customer / Pet"
+                        class="form-control" value="{{ request('search') }}">
+
+                    <input type="text" name="date_range" id="dateRange" placeholder="Select date range"
+                        class="form-control"
+                        value="{{ request('start_date') && request('end_date') ? request('start_date') . ' to ' . request('end_date') : '' }}">
+
+                    <button type="submit">Filter</button>
+                    <a href="{{ route('admin.appointments.index') }}">Clear</a>
+
+                </form>
+
+            </div>
+        </div>
+        <div class="section-card">
             <h4>All Appointment Details</h4>
 
             @if (session('success'))
@@ -534,13 +666,16 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="mt-3">
+                {{ $allAppointments->appends(request()->query())->links() }}
+            </div>
         </div>
 
     </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.getElementById('datePicker').addEventListener('change', function() {
             window.location.href = `?date=${this.value}`;
@@ -571,9 +706,10 @@
         });
 
 
-        document.getElementById('resetFilterBtn').addEventListener('click', function(){
+        document.getElementById('resetFilterBtn').addEventListener('click', function() {
 
             window.location.href = "{{ route('admin.appointments.index') }}";
 
-        });    </script>
+        });
+    </script>
 @endpush

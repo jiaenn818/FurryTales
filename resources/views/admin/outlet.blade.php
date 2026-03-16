@@ -522,6 +522,45 @@
             letter-spacing: 0.3px;
         }
 
+    /* =========================
+       PAGINATION
+    ========================= */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding-left: 0;
+            margin: 30px;
+            gap: 5px;
+        }
+
+        .pagination li a,
+        .pagination li span {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--color-brand-medium);
+            text-decoration: none;
+            color: var(--color-brand-dark);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .pagination li a:hover {
+            background-color: var(--color-brand-light);
+        }
+
+        .pagination li.active span {
+            background: linear-gradient(135deg, var(--color-brand-primary-gradient-start), var(--color-brand-primary-gradient-end));
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .pagination li.disabled span {
+            color: #aaa;
+            cursor: not-allowed;
+            background-color: #f8f8f8;
+            border-color: #ddd;
+        }
 
 
         /* Responsive */
@@ -710,6 +749,11 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                <div class="mt-3">
+                    {{ $outlets->links() }}
+                </div>
+
             </div>
         </div>
     </div>

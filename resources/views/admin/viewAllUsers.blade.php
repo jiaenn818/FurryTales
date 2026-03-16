@@ -150,19 +150,19 @@
         }
 
         /* .btn-add {
-                padding: 10px 20px;
-                border-radius: 8px;
-                cursor: pointer;
-                background: linear-gradient(135deg, var(--color-brand-primary-gradient-start), var(--color-brand-primary-gradient-end));
-                color: white;
-                font-weight: 600;
-                transition: 0.3s;
-            }
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            background: linear-gradient(135deg, var(--color-brand-primary-gradient-start), var(--color-brand-primary-gradient-end));
+                            color: white;
+                            font-weight: 600;
+                            transition: 0.3s;
+                        }
 
-            .btn-add:hover {
-                opacity: 0.85;
-            }
-         */
+                        .btn-add:hover {
+                            opacity: 0.85;
+                        }
+                     */
         button.delete-btn {
             background-color: #ef4444;
             color: white;
@@ -681,6 +681,118 @@
         .alert-error li {
             margin-bottom: 4px;
         }
+
+        /* Filters area */
+        .filters-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 16px 0 24px;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .filters-container form {
+            flex-direction: row;
+        }
+
+        
+        .filters-container input[type="text"],
+        .filters-container select {
+            min-width: 180px;
+            padding: 10px 14px;
+            border: 1px solid rgba(0, 0, 0, 0.24);
+            border-radius: 30px;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
+        }
+
+        .filters-container input[type="text"]:focus,
+        .filters-container select:focus {
+            outline: none;
+            border-color: rgba(48, 133, 214, 0.8);
+            box-shadow: 0 0 0 3px rgba(48, 133, 214, 0.18);
+        }
+
+        .filters-container button[type="submit"],
+        .filters-container a {
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .filters-container button[type="submit"] {
+            border: none;
+            background: linear-gradient(135deg, #2a9df4, #1b6dd5);
+            color: #fff;
+        }
+
+        .filters-container button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(26, 101, 183, 0.25);
+        }
+
+        .filters-container a {
+            border: 1px solid rgba(0, 0, 0, 0.16);
+            background: rgba(255, 255, 255, 0.85);
+            color: rgba(0, 0, 0, 0.75);
+        }
+
+        .filters-container a:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        /* =========================
+               PAGINATION
+            ========================= */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding-left: 0;
+            margin: 30px;
+            gap: 5px;
+        }
+
+        .pagination li a,
+        .pagination li span {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--color-brand-medium);
+            text-decoration: none;
+            color: var(--color-brand-dark);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .pagination li a:hover {
+            background-color: var(--color-brand-light);
+        }
+
+        .pagination li.active span {
+            background: linear-gradient(135deg, var(--color-brand-primary-gradient-start), var(--color-brand-primary-gradient-end));
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .pagination li.disabled span {
+            color: #aaa;
+            cursor: not-allowed;
+            background-color: #f8f8f8;
+            border-color: #ddd;
+        }
     </style>
 @endpush
 
@@ -813,19 +925,20 @@
                 </div>
             </div>
 
-            <!-- Tabs -->
             <div class="tabs">
-                <div class="tab active" data-type="all">All</div>
-                <div class="tab" data-type="customer">Customer</div>
-                <div class="tab" data-type="staff">Staff</div>
-                <div class="tab" data-type="rider">Rider</div>
+                <a href="{{ route('admin.users', ['type' => 'all']) }}" class="tab {{ $type == 'all' ? 'active' : '' }}">All</a>
+                <a href="{{ route('admin.users', ['type' => 'customer']) }}" class="tab {{ $type == 'customer' ? 'active' : '' }}">Customer</a>
+                <a href="{{ route('admin.users', ['type' => 'staff']) }}" class="tab {{ $type == 'staff' ? 'active' : '' }}">Staff</a>
+                <a href="{{ route('admin.users', ['type' => 'rider']) }}" class="tab {{ $type == 'rider' ? 'active' : '' }}">Rider</a>
             </div>
 
             <!-- Search Bar -->
-            <div class="pets-search" style="margin-bottom:20px;">
-                <input type="text" id="userSearch" placeholder="Search by User ID, Name or Email..."
-                    autocomplete="off">
-            </div>
+            <form method="GET" action="{{ route('admin.users') }}" class="filters-container" style="flex-direction: row">
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Search by User ID, Name or Email...">
+                <button type="submit">Search</button>
+                <a href="{{ route('admin.users') }}">Clear</a>
+            </form>
 
             <!-- Table -->
             <div class="table-container" style="overflow:scroll;">
@@ -844,9 +957,9 @@
                             <tr data-type="{{ $user->customer ? 'customer' : ($user->staff ? 'staff' : ($user->rider ? 'rider' : 'normal')) }}"
                                 data-userid="{{ strtolower($user->userID) }}" data-name="{{ strtolower($user->name) }}"
                                 data-email="{{ strtolower($user->email) }}">
-                                <td  style="text-align: center">
+                                <td style="text-align: center">
                                     {{ $user->staff->StaffID ?? ($user->rider->riderID ?? ($user->customer->customerID ?? $user->userID)) }}
-                                    <br/>
+                                    <br />
                                     @if ($user->customer)
                                         <span class="badge customer">Customer</span>
                                     @endif
@@ -892,7 +1005,7 @@
                                     @endif
                                 </td>
 
-                                
+
                                 <td>
                                     <form action="{{ route('admin.users.updateStatus', $user->userID) }}" method="POST">
                                         @csrf
@@ -904,7 +1017,8 @@
                                             </option>
                                         </select>
                                     </form>
-                                    <strong>Created At :</strong>{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
+                                    <strong>Created At
+                                        :</strong>{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
                                 </td>
                                 <td>
                                     <form action="{{ route('admin.users.destroy', $user->userID) }}" method="POST"
@@ -923,7 +1037,7 @@
                             </tr>
                         @endempty
 
-                        @if (!$isManager)
+                        @if (!$isManager && ($type === 'staff' || $type === 'rider'))
                             <tr>
                                 <td colspan="8" style="text-align:center; padding:20px;">
                                     You do not have permission to view this section.
@@ -934,7 +1048,7 @@
             </table>
 
             <!-- Pagination -->
-            <div class="pets-pagination">
+            <div class="mt-3">
                 {{ $users->links() }}
             </div>
         </div>
@@ -942,29 +1056,6 @@
 </main>
 @push('scripts')
     <script>
-        const tabs = document.querySelectorAll('.tab');
-        const rows = document.querySelectorAll('tbody tr');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // activate tab
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                const type = tab.dataset.type;
-
-                rows.forEach(row => {
-                    if (type === 'all') {
-                        row.style.display = '';
-                    } else if (row.dataset.type.includes(type)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            });
-        });
-
         function showForm(type) {
             const form = document.getElementById('addUserForm');
 
@@ -995,40 +1086,6 @@
             }
             select.addEventListener('change', updateColor);
             updateColor(); // initialize color
-        });
-
-        const searchInput = document.getElementById('userSearch');
-        const clearBtn = document.getElementById('clearSearch');
-        const tableRows = document.querySelectorAll('tbody tr');
-
-        function filterUsers() {
-            const query = searchInput.value.toLowerCase().trim();
-
-            tableRows.forEach(row => {
-                const userID = row.dataset.userid || '';
-                const name = row.dataset.name || '';
-                const email = row.dataset.email || '';
-
-                const match =
-                    userID.includes(query) ||
-                    name.includes(query) ||
-                    email.includes(query);
-
-                row.style.display = match ? '' : 'none';
-
-                if (match && query !== '') {
-                    row.classList.add('search-highlight');
-                    setTimeout(() => row.classList.remove('search-highlight'), 1500);
-                }
-            });
-        }
-
-        searchInput.addEventListener('input', filterUsers);
-
-        clearBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            filterUsers();
-            searchInput.focus();
         });
 
         setTimeout(() => {
