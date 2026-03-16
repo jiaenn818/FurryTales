@@ -13,7 +13,6 @@ class AdminAppointmentController extends Controller
 {
     public function index(Request $request)
     {
-        //check user type
         if (!Auth::check() || !Auth::user()->isStaff()) {
             abort(403, 'Unauthorized User');
         }
@@ -23,7 +22,6 @@ class AdminAppointmentController extends Controller
             ->where('AppointmentDateTime', '<=', now())
             ->update(['Status' => 'Ongoing']);
 
-
         if ($request->has('clear')) {
             return redirect()->route('admin.appointments.index');
         }
@@ -32,40 +30,50 @@ class AdminAppointmentController extends Controller
             ? Carbon::parse($request->date)
             : Carbon::now();
 
-        $startOfWeek = $selectedDate->copy()->startOfWeek(); // current selected week
+        $startOfWeek = $selectedDate->copy()->startOfWeek();
         $endOfWeek = $selectedDate->copy()->endOfWeek();
 
-        // NEXT WEEK
         $nextWeekStart = Carbon::now()->addWeek()->startOfWeek();
         $nextWeekEnd = Carbon::now()->addWeek()->endOfWeek();
 
-        // Current week appointments
         $appointments = Appointment::with(['pet', 'customer'])
             ->whereBetween('AppointmentDateTime', [$startOfWeek, $endOfWeek])
             ->get();
 
-        // Next week appointments (for reminder)
         $nextWeekAppointments = Appointment::with(['pet', 'customer'])
             ->whereBetween('AppointmentDateTime', [$nextWeekStart, $nextWeekEnd])
             ->get();
 
-        $allAppointments = Appointment::with(['pet', 'customer'])
-            ->orderBy('AppointmentDateTime', 'desc')
-            ->paginate(10);
+        // =========================
+        // ALL APPOINTMENTS QUERY
+        // =========================
+        $query = Appointment::with(['pet', 'customer']);
 
-$query = Appointment::with(['pet','customer']);
+        // Date range filter
+        if ($request->start_date && $request->end_date) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $query->whereBetween('AppointmentDateTime', [$startDate, $endDate]);
+        }
 
-if ($request->start_date && $request->end_date) {
+        // Server-side search
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
 
-    $startDate = Carbon::parse($request->start_date)->startOfDay();
-    $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(AppointmentID) LIKE ?', ["%{$search}%"])
+                    ->orWhereHas('customer', function ($q2) use ($search) {
+                        $q2->whereRaw('LOWER(CustomerName) LIKE ?', ["%{$search}%"]);
+                    })
+                    ->orWhereHas('pet', function ($q3) use ($search) {
+                        $q3->whereRaw('LOWER(PetName) LIKE ?', ["%{$search}%"]);
+                    });
+            });
+        }
 
-    $query->whereBetween('AppointmentDateTime', [$startDate, $endDate]);
-}
-
-$allAppointments = $query
-    ->orderBy('AppointmentDateTime', 'desc')
-    ->get();
+        $allAppointments = $query->orderBy('AppointmentDateTime', 'desc')
+            ->paginate(10)
+            ->withQueryString(); // keep filters/search in pagination
 
         return view('admin.viewAllAppointment', compact(
             'appointments',
@@ -78,7 +86,6 @@ $allAppointments = $query
             'nextWeekEnd'
         ));
     }
-
     public function updateStatus(Request $request, $id)
     {
         if (!Auth::check() || !Auth::user()->isStaff()) {

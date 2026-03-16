@@ -10,17 +10,32 @@ use Illuminate\Http\Request;
 
 class AdminVoucherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (!Auth::check() || !Auth::user()->isStaff()) {
             abort(403, 'Unauthorized User');
         }
 
-        $vouchers = Voucher::orderBy('createdAt', 'desc')->paginate(10);
+        $query = Voucher::query();
+
+        // Server-side search
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(voucherID) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('CAST(discountAmount AS CHAR) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('CAST(minSpend AS CHAR) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('CAST(usageLimit AS CHAR) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('CAST(expiryDate AS CHAR) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        // Order and paginate
+        $vouchers = $query->orderBy('createdAt', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.viewAllVoucher', compact('vouchers'));
     }
-
     public function store(Request $request)
     {
         // Validate input

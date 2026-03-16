@@ -16,20 +16,34 @@ use Illuminate\Support\Str;
 class AccessoryController extends Controller
 {
     // Display all accessories
-    public function index()
-    {   
-        //check user type
+    public function index(Request $request)
+    {
         if (!Auth::check() || !Auth::user()->isStaff()) {
             abort(403, 'Unauthorized User');
         }
 
-        $accessories = Accessory::with(['supplier', 'outletAccessories'])
-            ->orderBy('AccessoryID', 'desc')  
-            ->paginate(10);
+        $query = Accessory::with(['supplier', 'outletAccessories']);
 
-        return view('admin.accessory.accessoryList', compact('accessories'));
+        // Filter by search term
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('AccessoryName', 'like', "%{$search}%")
+                ->orWhere('AccessoryID', 'like', "%{$search}%")
+                ->orWhere('Category', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by category
+        if ($category = $request->input('category')) {
+            $query->where('Category', $category);
+        }
+
+        $accessories = $query->orderBy('AccessoryID', 'desc')->paginate(10)->withQueryString();
+
+        $categories = Accessory::select('Category')->distinct()->get();
+
+        return view('admin.accessory.accessoryList', compact('accessories', 'categories'));
     }
-
     // Show form to add accessory
     public function add()
     {

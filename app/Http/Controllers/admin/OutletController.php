@@ -17,7 +17,7 @@ class OutletController extends Controller
         $outlets = Outlet::withCount([
             'pets',
             'outletAccessories as accessories_count'
-        ])->paginate(10);
+        ])->paginate(5);
 
         $statesCount = $outlets->pluck('State')->unique()->count();
         $averagePets = $outlets->avg('pets_count') ?? 0;

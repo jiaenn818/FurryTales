@@ -15,29 +15,57 @@ use App\Mail\OtpMail;
 class AdminUserController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         if (!Auth::check() || !Auth::user()->isStaff()) {
             abort(403, 'Unauthorized User');
         }
 
         $currentUser = Auth::user();
-        $isManager = $currentUser->isManager();  
+        $isManager = $currentUser->isManager();
 
         $query = User::with(['customer', 'staff.outlet', 'rider']);
 
+        // Filter by type tab
+        $type = $request->get('type', 'all'); // default to 'all'
+
         if (!$isManager) {
-            $query->whereHas('customer');
+            // Non-managers: for staff/rider/all tabs, return empty query
+            if ($type === 'staff' || $type === 'rider' || $type === 'all') {
+                $query->whereRaw('0 = 1'); // always false, returns no rows
+            }
+            // customer tab can still show customers if you want, or you can also block
+        } else {
+            // Managers: normal filtering
+            if ($type === 'customer') {
+                $query->whereHas('customer');
+            } elseif ($type === 'staff') {
+                $query->whereHas('staff');
+            } elseif ($type === 'rider') {
+                $query->whereHas('rider');
+            }
+            // 'all' shows everything
         }
 
-        $users = $query->paginate(10);
+        // Server-side search (simple)
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(userID) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(email) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(phoneNo) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        $users = $query->paginate(10)->withQueryString(); // keep search & type params in pagination
 
         $outlets = Outlet::all();
         $roles = Staff::getRoles();
 
-        return view('admin.viewAllUsers', compact('users', 'outlets', 'roles', 'isManager'));
+        return view('admin.viewAllUsers', compact('users', 'outlets', 'roles', 'isManager', 'type'));
     }
-
     public function updateStatus(Request $request, $userID)
     {
         $request->validate([
