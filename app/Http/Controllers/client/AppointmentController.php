@@ -41,7 +41,7 @@ class AppointmentController extends Controller
 
         $pet = Pet::findOrFail($petID);
 
-        return view('Client.appointments.create', compact('pet', 'user', 'allPets'));
+        return view('client.appointments.create', compact('pet', 'user', 'allPets'));
     }
 
     /**
