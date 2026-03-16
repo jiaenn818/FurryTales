@@ -9,7 +9,7 @@ class HelpController extends Controller
 {
     public function show()
     {
-        return view('Client.help');
+        return view('client.help');
     }
 
     public function ask(Request $request)
