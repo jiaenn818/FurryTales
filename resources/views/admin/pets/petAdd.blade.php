@@ -133,8 +133,8 @@
             </div>
 
             <div class="form-submit">
-                <button type="submit">Add Pet</button>
-                <button type="reset">Reset</button>
+                <button type="submit" class="submit-btn">Add Pet</button>
+                <button type="reset" class="reset-btn">Reset</button>
             </div>
 
         </div>
