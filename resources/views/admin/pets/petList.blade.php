@@ -184,14 +184,14 @@
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-paw"></i></div>
                     <h3>Total Pets</h3>
-                    <div class="number">{{ $pets->count() }}</div>
+                    <div class="number">{{ $petCount }}</div>
                     <div class="stat-trend">All categories</div>
                 </div>
                 @foreach ($categories as $cat)
                     @php
                         $type = strtolower($cat->category_name);
                         $count = $categoryCounts[$type] ?? 0;
-                        $percent = $pets->count() ? round(($count / $pets->count()) * 100, 1) : 0;
+                        $percent = $petCount ? round(($count / $petCount) * 100, 1) : 0;
                     @endphp
                     <div class="stat-card" data-type="{{ $type }}">
                         <div class="stat-icon">
