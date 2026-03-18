@@ -20,17 +20,13 @@ class PetController extends Controller
             abort(403, 'Unauthorized User');
         }
 
-        // -------------------------------
-        // 1️⃣ For stats, get all records
-        // -------------------------------
-        $allPets = Pet::with(['outlet', 'supplier'])->get(); // all pets for stats
+        // 1️⃣ For stats: all pets (ignore filters)
+        $allPets = Pet::all();
+        $petCount = $allPets->count();
 
-        // -------------------------------
         // 2️⃣ Build query for table with search/filter
-        // -------------------------------
         $query = Pet::with(['outlet', 'supplier'])->orderBy('PetID', 'desc');
 
-        // Server-side search
         if ($search = request('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('PetName', 'like', "%{$search}%")
@@ -40,20 +36,18 @@ class PetController extends Controller
             });
         }
 
-        // Category filter
         if ($category = request('category')) {
             $query->where('Type', $category);
         }
 
-        // Paginate table (after filtering)
         $pets = $query->paginate(10)->withQueryString();
-        $petCount = $query->count();
 
-        // Get categories
+        // 3️⃣ Categories for stats & filters
         $categories = $this->getAllCategories();
 
-        return view('admin.pets.petList', compact('pets', 'allPets', 'categories','petCount'));
-}
+        return view('admin.pets.petList', compact('pets', 'allPets', 'categories', 'petCount'));
+    }
+
     public function add()
     {
         $categories = Pet::getAllCategories();
@@ -326,40 +320,23 @@ class PetController extends Controller
             ->with('success', "Pet '{$pet->PetName}' deleted successfully!");
     }
 
-   public function detectBreed(Request $request)
+    public function detectBreed(Request $request)
     {
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
-    
+
         try {
-            $file = $request->file('image');
-            $tempPath = $file->getRealPath(); // temporary file path
-    
-            // ngrok URL
-            $ngrokUrl = "https://precosmic-unhygienic-darleen.ngrok-free.dev/classify";
-    
-            // Initialize cURL
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $ngrokUrl);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                'image' => new \CURLFile($tempPath, $file->getMimeType(), $file->getClientOriginalName())
-            ]);
-    
-            $response = curl_exec($ch);
-            $error = curl_error($ch);
-            curl_close($ch);
-    
-            if ($error) {
-                throw new \Exception($error);
+            $tempPath = $request->file('image')->store('detect', 'uploads');
+            $fullPath = public_path('image/' . $tempPath);
+
+            $result = Pet::detectBreed($fullPath);
+
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
             }
-    
-            $result = json_decode($response, true);
-    
+
             return response()->json($result);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'breed' => '',
