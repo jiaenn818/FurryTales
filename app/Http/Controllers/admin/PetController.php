@@ -47,12 +47,13 @@ class PetController extends Controller
 
         // Paginate table (after filtering)
         $pets = $query->paginate(10)->withQueryString();
+        $petCount = $query->count();
 
         // Get categories
         $categories = $this->getAllCategories();
 
-        return view('admin.pets.petList', compact('pets', 'allPets', 'categories'));
-    }
+        return view('admin.pets.petList', compact('pets', 'allPets', 'categories','petCount'));
+}
     public function add()
     {
         $categories = Pet::getAllCategories();
